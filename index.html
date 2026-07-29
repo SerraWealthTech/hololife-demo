@@ -8,7 +8,6 @@
 <link rel="icon" href="https://hololife.ee/favicon.png" />
 <meta property="og:title" content="HOLOLIFE — Where Deep Work Meets Recovery" />
 <meta property="og:image" content="https://hololife.ee/og-image.png" />
-<script>document.documentElement.className += ' js';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -179,9 +178,11 @@
   .foot-b{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--dim);font-size:13px}
   @media(max-width:820px){.foot{grid-template-columns:1fr}}
 
-  .reveal{transition:.7s cubic-bezier(.2,.7,.2,1)}
-  .js .reveal{opacity:0;transform:translateY(24px)}   /* hidden ONLY when JS is on (progressive enhancement) */
-  .reveal.in{opacity:1;transform:none}
+  /* Pure-CSS entrance — NO JS dependency, content is guaranteed visible after the animation (fill:both
+     ends at opacity:1) and instantly if animations are disabled. A sales demo must never look empty. */
+  .reveal{animation:fadeup .8s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes fadeup{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.reveal{animation:none}}
 </style>
 </head>
 <body>
@@ -302,7 +303,7 @@
     <div class="reveal">
       <div class="ev">
         <div class="date"><div class="d">30</div><div class="m">Jul</div></div>
-        <div class="info"><h3>Vibe Coding × Biohacking <span class="gold">· weekly series</span></h3><p>Build something live while your body runs on red-light and neurofeedback. Founders, makers &amp; the AI-curious.</p><div class="meta">Wed · 17:30–20:30 · back by demand after last week's full house</div></div>
+        <div class="info"><h3>Vibe Coding × Biohacking <span class="gold">· make it a series</span></h3><p>Build something live while your body runs on red-light and neurofeedback. Founders, makers &amp; the AI-curious.</p><div class="meta">Wed · 17:30–20:30 · limited seats</div></div>
         <div class="seats">6 seats left</div>
       </div>
       <div class="ev">
@@ -465,18 +466,9 @@
 </footer>
 
 <script>
-  // sticky nav
+  // sticky nav only — the entrance animation is pure CSS (no JS), so content can never be JS-gated blank
   const hdr=document.getElementById('hdr');
   addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>40));
-  // reveal on scroll — with fallbacks so content is NEVER permanently hidden
-  const revealEls=document.querySelectorAll('.reveal');
-  const show=el=>el.classList.add('in');
-  if('IntersectionObserver' in window){
-    const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){show(e.target);io.unobserve(e.target)}}),{threshold:.1});
-    revealEls.forEach(el=>io.observe(el));
-    // safety net: anything still hidden after 2s (IO misfire, off-screen capture) is shown regardless
-    setTimeout(()=>document.querySelectorAll('.reveal:not(.in)').forEach(show),2000);
-  }else{ revealEls.forEach(show); }   // no IO support → just show everything
 </script>
 </body>
 </html>
